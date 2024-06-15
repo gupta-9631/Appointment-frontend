@@ -5,16 +5,13 @@ import axios from "axios";
 function MyAppointment() {
   const [bookedAppointment, setBookedAppointment] = useState([]);
 
-  let userId = localStorage.getItem("userId");
-
-  // console.log(bookedAppointment);
+  let user_id = localStorage.getItem("userId");
 
   const getAvailableSlots = () => {
     axios
-      .post("http://localhost:3000/appointment/booked", userId)
+      .post("http://localhost:3000/appointment/booked", { user_id })
       .then((response) => {
         setBookedAppointment(response.data.data);
-        // setAvailableSlots(result);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -25,14 +22,12 @@ function MyAppointment() {
     getAvailableSlots();
   }, []);
 
-  const appointments = [
-    { date: "2024-06-15", time: "10:00 AM" },
-    { date: "2024-06-16", time: "11:00 AM" },
-    { date: "2024-06-17", time: "02:00 PM" },
-  ];
   return (
     <div className="min-h-screen bg-gray-100 pt-6">
-      <Appointments appointments={bookedAppointment} />
+      <Appointments
+        appointments={bookedAppointment}
+        getAvailableSlots={() => getAvailableSlots()}
+      />
     </div>
   );
 }

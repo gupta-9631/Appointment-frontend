@@ -8,13 +8,14 @@ export const BookAppointment = () => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [slotData, setSlotData] = useState({});
 
-  const notify = () => toast("Your appointment booked successfully");
+  const notify = () => toast.success("Your appointment booked successfully");
+  const notify2 = () => toast.error("You have an existing appointment");
 
   let userId = localStorage.getItem("userId");
   function extractLocalTimeFromISO(isoString) {
     const date = new Date(isoString);
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
+    const hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
 
     const time = `${hours.toString().padStart(2, "0")}:${minutes
       .toString()
@@ -26,7 +27,6 @@ export const BookAppointment = () => {
     axios
       .get("http://localhost:3000/appointment/available")
       .then((response) => {
-        // setAvailableSlots(response.data.data);
         const result = response.data.data.map((item) => {
           return {
             start_time: item.start_time,
@@ -51,13 +51,12 @@ export const BookAppointment = () => {
         slot_id: slotData.id,
       })
       .then((response) => {
-        console.log(response.data);
         notify();
         setSelectedSlot(null);
         getAvailableSlots();
-        // navigate("/home");
       })
       .catch((error) => {
+        notify2();
         console.error("Error:", error);
       });
   };
@@ -73,10 +72,6 @@ export const BookAppointment = () => {
 
   const handleButtonClick = () => {
     if (selectedSlot !== null) {
-      // alert(
-      //   `Slot booked: ${availableSlots[selectedSlot].start_time} - ${availableSlots[selectedSlot].end_time}`
-      // );
-
       bookAppointment();
     }
   };
@@ -113,14 +108,14 @@ export const BookAppointment = () => {
           </button>
           <Toaster
             toastOptions={{
-              duration: 5000,
+              duration: 2000,
               style: {
                 background: "green",
                 color: "#fff",
               },
 
               success: {
-                duration: 3000,
+                duration: 2000,
                 theme: {
                   primary: "green",
                   secondary: "black",
